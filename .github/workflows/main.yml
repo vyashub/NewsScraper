@@ -2,14 +2,16 @@ name: Run Daily Notebook
 
 on:
   schedule:
-    - cron: '30 6 * * *'  # 11:30 AM IST = 6:00 AM UTC
-  workflow_dispatch:      # Allows manual run
+    - cron: '30 6 * * *'  # 11:30 AM IST (UTC+5:30)
+  workflow_dispatch:
 
 jobs:
   execute-notebook:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -18,7 +20,11 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install papermill
+          python -m pip install --upgrade pip
+          pip install jupyter papermill ipykernel
+
+          # Register the Python kernel explicitly
+          python -m ipykernel install --user --name python3
 
       - name: Run notebook
         run: |
